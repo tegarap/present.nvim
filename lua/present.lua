@@ -166,18 +166,18 @@ local parse_slides = function(lines)
     local start_row, _, end_row, _ = node:range()
     current_slide.title = lines[start_row + 1]
     local codeblocks = vim
-      .iter(codeblock_query:iter_captures(root, contents, start_row, end_row))
-      :map(function(_, n)
-        local s, _, e, _ = n:range()
-        local language = vim.trim(string.sub(lines[s + 1], 4))
-        return {
-          language = language,
-          body = table.concat(vim.list_slice(lines, s + 2, e - 1), "\n"),
-          start_row = s + 1,
-          end_row = e,
-        }
-      end)
-      :totable()
+        .iter(codeblock_query:iter_captures(root, contents, start_row, end_row))
+        :map(function(_, n)
+          local s, _, e, _ = n:range()
+          local language = vim.trim(string.sub(lines[s + 1], 4))
+          return {
+            language = language,
+            body = table.concat(vim.list_slice(lines, s + 2, e - 1), "\n"),
+            start_row = s + 1,
+            end_row = e,
+          }
+        end)
+        :totable()
 
     local comment = options.syntax.comment
     local stop = options.syntax.stop
@@ -234,9 +234,10 @@ local create_window_configurations = function()
   local width = vim.o.columns
   local height = vim.o.lines
 
-  local header_height = 1 + 2 -- 1 + border
-  local footer_height = 1 -- 1, no border
-  local body_height = height - header_height - footer_height - 2 - 1 -- for our own border
+  -- local header_height = 1 + 2 -- 1 + border
+  local footer_height = 1                                   -- 1, no border
+  local body_row = 4
+  local body_height = height - body_row - footer_height - 6
 
   return {
     background = {
@@ -260,11 +261,11 @@ local create_window_configurations = function()
     },
     body = {
       relative = "editor",
-      width = width - 8,
+      width = math.floor(width * 0.9),
       height = body_height,
       style = "minimal",
       border = { " ", " ", " ", " ", " ", " ", " ", " " },
-      col = 8,
+      col = math.floor(width * 0.05),
       row = 4,
     },
     footer = {
